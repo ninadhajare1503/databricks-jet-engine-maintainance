@@ -17,14 +17,51 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Databricks CLI
-        run: pip install databricks-cli
+      - name: Install Databricks CLI and jq
+        run: |
+          pip install databricks-cli
+          sudo apt-get -y install jq
 
-      - name: Run Databricks Job
+      - name: Start Databricks Job and Wait for Completion
         env:
-          # Set environment variables for the Databricks CLI
           DATABRICKS_HOST: "https://dbc-72efe024-1189.cloud.databricks.com"
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
-          # Trigger the job using the job ID
-          databricks jobs run-now --job-id 165824492255085
+          # 1. Start the job and capture the run_id from the JSON output
+          RUN_ID=$(databricks jobs run-now --job-id 1475150698443343 | jq .run_id)
+
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" == "null" ]; then
+            echo "Failed to get RUN_ID."
+            exit 1
+          fi
+
+          echo "Databricks job started with RUN_ID: $RUN_ID"
+
+          # 2. Poll the job status until it's finished
+          while true; do
+            STATUS=$(databricks runs get --run-id $RUN_ID | jq -r .state.life_cycle_state)
+            
+            if [ "$STATUS" == "TERMINATED" ] || [ "$STATUS" == "SKIPPED" ]; then
+              echo "Job has finished."
+              break
+            elif [ "$STATUS" == "INTERNAL_ERROR" ]; then
+              echo "Job failed with an internal error."
+              exit 1
+            fi
+            
+            echo "Job status is '$STATUS'. Waiting 30 seconds..."
+            sleep 30
+          done
+
+          # 3. Check the final result of the job
+          RESULT_STATE=$(databricks runs get --run-id $RUN_ID | jq -r .state.result_state)
+
+          echo "Final job result is '$RESULT_STATE'."
+
+          if [ "$RESULT_STATE" == "SUCCESS" ]; then
+            echo "✅ Job completed successfully."
+            exit 0
+          else
+            echo "❌ Job failed. Check the Databricks UI for details."
+            exit 1
+          fi
