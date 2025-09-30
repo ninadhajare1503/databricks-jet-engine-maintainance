@@ -1,0 +1,31 @@
+# Name of the GitHub Action workflow
+name: Databricks CI on Dev Branch
+
+# Trigger the workflow on every push to the 'dev' branch
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  run-databricks-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Databricks Job
+        uses: databricks/run-job@v0
+        with:
+          # Your Databricks workspace URL
+          databricks-host: "https://dbc-72efe024-1189.cloud.databricks.com.databricks.net"
+          
+          # Use the secret token we created
+          databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
+
+          # The ID of the DEV job to run
+          job-id: "1475150698443343" # ❗️ PASTE YOUR DEV JOB ID HERE
+
+          # Optional: Pass the GitHub commit SHA to the job
+          # This is useful for tracking which commit triggered the run
+          git-commit: ${{ github.sha }}
