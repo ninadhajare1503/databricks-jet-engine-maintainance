@@ -24,7 +24,7 @@ jobs:
           databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
 
           # The ID of the DEV job to run
-          job-id: "165824492255085" # ❗️ PASTE YOUR DEV JOB ID HERE
+          job-id: "1475150698443343" # ❗️ PASTE YOUR DEV JOB ID HERE
 
           # Optional: Pass the GitHub commit SHA to the job
           # This is useful for tracking which commit triggered the run
