@@ -1,4 +1,4 @@
-name: Databricks CI on Dev Branch
+name: Databricks CI on Dev Branch (CLI Version)
 
 on:
   push:
@@ -9,15 +9,22 @@ jobs:
   run-databricks-job:
     runs-on: ubuntu-latest
     steps:
-      # This is the first step from the successful test file
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # This is the rebuilt Databricks step
-      - name: Run Databricks Job
-        uses: databricks/run-job@main
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          databricks-host: "https://dbc-72efe024-1189.cloud.databricks.com"
-          databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
-          job-id: "1475150698443343"
-          git-commit: ${{ github.sha }}
+          python-version: '3.10'
+
+      - name: Install Databricks CLI
+        run: pip install databricks-cli
+
+      - name: Run Databricks Job
+        env:
+          # Set environment variables for the Databricks CLI
+          DATABRICKS_HOST: "https://dbc-72efe024-1189.cloud.databricks.com"
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          # Trigger the job using the job ID
+          databricks jobs run-now --job-id 1475150698443343
