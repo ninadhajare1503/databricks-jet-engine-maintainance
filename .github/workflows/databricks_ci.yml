@@ -64,4 +64,3 @@ jobs:
           else
             echo "❌ Job failed. Check the Databricks UI for details."
             exit 1
-          fi
