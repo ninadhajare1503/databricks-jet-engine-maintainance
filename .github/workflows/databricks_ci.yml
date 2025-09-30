@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Databricks Job
-        uses: databricks/run-job@v0
+        uses: databricks/run-job@main
         with:
           # Your Databricks workspace URL
           databricks-host: "https://dbc-72efe024-1189.cloud.databricks.com.databricks.net"
