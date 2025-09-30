@@ -28,7 +28,7 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
           # 1. Start the job and capture the run_id from the JSON output
-          RUN_ID=$(databricks jobs run-now --job-id 165824492255085 | jq .run_id)
+          RUN_ID=$(databricks jobs run-now --job-id 1475150698443343 | jq .run_id)
 
           if [ -z "$RUN_ID" ] || [ "$RUN_ID" == "null" ]; then
             echo "Failed to get RUN_ID."
@@ -64,3 +64,4 @@ jobs:
           else
             echo "❌ Job failed. Check the Databricks UI for details."
             exit 1
+          fi
