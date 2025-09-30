@@ -27,4 +27,4 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
           # Trigger the job using the job ID
-          databricks jobs run-now --job-id 1475150698443343
+          databricks jobs run-now --job-id 165824492255085
